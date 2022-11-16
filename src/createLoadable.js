@@ -338,7 +338,19 @@ function createLoadable({
       }
     }
 
-    const EnhancedInnerLoadable = withChunkExtractor(InnerLoadable)
+    if (options.suspense) {
+      return cachedLoad({}).then((Component) => {
+        const EnhancedInnerLoadable = withChunkExtractor(function FunctionInnerLoadable({ forwardRef, __chunkExtractor, ...props }) {
+          __chunkExtractor.addChunk(ctor.chunkName(props))
+          return <Component {...props } />
+        })
+        return React.forwardRef((props, ref) => (
+          <EnhancedInnerLoadable forwardedRef={ref} {...props} />
+        ))    
+      })
+    }
+
+    const EnhancedInnerLoadable = withChunkExtractor(ClassInnerLoadable)
     const Loadable = React.forwardRef((props, ref) => (
       <EnhancedInnerLoadable forwardedRef={ref} {...props} />
     ))
