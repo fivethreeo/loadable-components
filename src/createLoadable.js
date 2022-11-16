@@ -339,7 +339,7 @@ function createLoadable({
     }
 
     if (options.suspense) {
-      return cachedLoad({}).then((Component) => {
+      const load = cachedLoad({}).then((Component) => {
         const EnhancedInnerLoadable = withChunkExtractor(function FunctionInnerLoadable({ forwardRef, __chunkExtractor, ...props }) {
           __chunkExtractor.addChunk(ctor.chunkName(props))
           return <Component {...props } />
@@ -348,6 +348,10 @@ function createLoadable({
           <EnhancedInnerLoadable forwardedRef={ref} {...props} />
         ))    
       })
+      if (load.status = STATUS_PENDING) {
+        throw load
+      }
+      return load
     }
 
     const EnhancedInnerLoadable = withChunkExtractor(ClassInnerLoadable)

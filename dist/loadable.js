@@ -969,7 +969,7 @@
       }(React.Component);
 
       if (options.suspense) {
-        return cachedLoad({}).then(function (Component) {
+        var load = cachedLoad({}).then(function (Component) {
           var EnhancedInnerLoadable = withChunkExtractor(function FunctionInnerLoadable(_ref2) {
             var forwardRef = _ref2.forwardRef,
                 __chunkExtractor = _ref2.__chunkExtractor,
@@ -985,6 +985,12 @@
             }, props));
           });
         });
+
+        if (load.status = STATUS_PENDING) {
+          throw load;
+        }
+
+        return load;
       }
 
       var EnhancedInnerLoadable = withChunkExtractor(ClassInnerLoadable);
