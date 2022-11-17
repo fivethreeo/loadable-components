@@ -8,6 +8,7 @@ import React from 'react'
 import { invariant, getRequiredChunkKey } from './sharedInternals'
 import ChunkExtractorManager from './ChunkExtractorManager'
 import { smartRequire, joinURLPath } from './util'
+import { fail } from 'assert'
 
 const EXTENSION_SCRIPT_TYPES = {
   '.js': 'script',
@@ -493,9 +494,9 @@ class ChunkExtractor {
         this.seenChunks.push(asset.chunk.id)
         return assetToLinkTag(asset, extraProps)
       }
-      return ""
+      return false
     })
-    return joinTags(linkTags)
+    return joinTags(linkTags.filter((tag)=>tag))
   }
 
   getScriptTagsSince(extraProps = {}) {
@@ -505,9 +506,9 @@ class ChunkExtractor {
         this.seenChunks.push(asset.chunk.id)
         return assetToScriptTag(asset, extraProps)
       }
-      return ""
+      return false
     })
-    return joinTags(assetsScriptTags)
+    return joinTags(assetsScriptTags.filter((tag)=>tag))
   }
 
 }
