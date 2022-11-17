@@ -6,7 +6,7 @@ import loadable from '@loadable/component'
 import Html from './Html'
 
 const A = loadable(() => import('./letters/A'), { ssrSuspense: true })
-const B = loadable(() => import('./letters/B'), { ssrSupense: true })
+const B = loadable(() => import('./letters/B'), { ssrSuspense: true })
 
 const App = ({ assets }) => {
   return (
