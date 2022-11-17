@@ -4,7 +4,7 @@ import React from 'react'
 import { renderToPipeableStream } from 'react-dom/server';
 import { ChunkExtractor } from '@loadable/server'
 import { Writable } from 'stream';
-import fs from  'fs/promises';
+import fs from  'fs';
 
 const app = express()
 
@@ -40,7 +40,7 @@ const webStats = path.resolve(
   '../../public/dist/web/loadable-stats.json',
 )
 
-app.get('*', async (req, res) => {
+app.get('*', (req, res) => {
   let didError = false;
   let shellReady = false;
 
@@ -78,8 +78,9 @@ app.get('*', async (req, res) => {
 
   const writeable = new LoadableWritable(res)
 
-  let statsNode = await fs.readFile(nodeStats).then(data=>JSON.parse(data)).catch(()=>({}))
-  let statsWeb = await fs.readFile(webStats).then(data=>JSON.parse(data)).catch(()=>({}))
+  let statsNode = JSON.parse(fs.readFileSync(nodeStats))
+  let statsWeb = JSON.parse(fs.readFileSync(webStats))
+
 
   const nodeExtractor = new ChunkExtractor({ stats: statsNode })
   const { default: App } = nodeExtractor.requireEntrypoint()
