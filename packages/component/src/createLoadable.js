@@ -5,6 +5,7 @@ import hoistNonReactStatics from 'hoist-non-react-statics'
 import { invariant } from './util'
 import Context from './Context'
 import { LOADABLE_SHARED } from './shared'
+import { lazyReact } from './lazyReact'
 
 const STATUS_PENDING = 'PENDING'
 const STATUS_RESOLVED = 'RESOLVED'
@@ -338,6 +339,8 @@ function createLoadable({
       }
     }
 
+    if (options.ssrSuspense) return ssrLazy(ctor);
+
     const EnhancedInnerLoadable = withChunkExtractor(InnerLoadable)
     const Loadable = React.forwardRef((props, ref) => (
       <EnhancedInnerLoadable forwardedRef={ref} {...props} />
@@ -355,6 +358,19 @@ function createLoadable({
     }
 
     return Loadable
+  }
+
+  function ssrLazy(ctor) {
+    return lazyReact({
+      ...ctor, onResolve: (Component) => {
+        return withChunkExtractor(
+          function ({ forwardRef, __chunkExtractor, ...props }) {
+            if(__chunkExtractor) __chunkExtractor.addChunk(ctor.chunkName(props))
+            return <Component {...props} />
+          }
+        )
+      }
+    })
   }
 
   function lazy(ctor, options) {

@@ -211,6 +211,7 @@ class ChunkExtractor {
     this.statsFile = statsFile
     this.entrypoints = Array.isArray(entrypoints) ? entrypoints : [entrypoints]
     this.chunks = []
+    this.seenChunks = []
     this.inputFileSystem = inputFileSystem
   }
 
@@ -484,6 +485,31 @@ class ChunkExtractor {
     const assets = this.getPreAssets()
     return assets.map(asset => assetToLinkElement(asset, extraProps))
   }
+
+  getLinkTagsSince(extraProps = {}) {
+    const assets = this.getPreAssets()
+    const linkTags = assets.map(asset => {
+      if (!this.seenChunks.includes(asset.chunk.id)) {
+        this.seenChunks.push(asset.chunk.id)
+        return assetToLinkTag(asset, extraProps)
+      }
+      return ""
+    })
+    return joinTags(linkTags)
+  }
+
+  getScriptTagsSince(extraProps = {}) {
+    const mainAssets = this.getMainAssets('script')
+    const assetsScriptTags = mainAssets.map(asset => {
+      if (!this.seenChunks.includes(asset.chunk.id)) {
+        this.seenChunks.push(asset.chunk.id)
+        return assetToScriptTag(asset, extraProps)
+      }
+      return ""
+    })
+    return joinTags(assetsScriptTags)
+  }
+
 }
 
 export default ChunkExtractor
