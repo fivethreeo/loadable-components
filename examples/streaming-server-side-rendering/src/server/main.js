@@ -58,10 +58,10 @@ app.get('*', async (req, res) => {
         const linkTags = webExtractor.getLinkTagsSince()
         if (scriptTags) {
           console.log('--' + scriptTags + '--')
-          this._writable.write(scriptTags)
+          this._writable.write(scriptTags, encoding)
         }
         if (linkTags.length) {
-          this._writable.write(linkTags) 
+          this._writable.write(linkTags, encoding) 
         }
       }
       // Finally write whatever React tried to write.
@@ -90,11 +90,12 @@ app.get('*', async (req, res) => {
 
   const webExtractor = new ChunkExtractor({ stats: statsWeb })
 
-  const bootstrapScriptContent = webExtractor.getScriptTagsSince()
+  // Ignore entry 
+  webExtractor.getScriptTagsSince()
 
   const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb}/>),
     {
-      bootstrapScriptContent,
+      bootstrapScripts: webExtractor.getMainAssets().map((asset)=>asset.url),
       onShellReady() {
         // The content above all Suspense boundaries is ready.
         // If something errored before we started streaming, we set the error code appropriately.
