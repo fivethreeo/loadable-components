@@ -69,10 +69,6 @@ app.get('*', async (req, res) => {
       this._writable.write(chunk, encoding, callback);
     }
 
-    end() {
-      this._writable.end()
-    }
-
     flush() {
       if (typeof this._writable.flush === 'function') {
         this._writable.flush();
