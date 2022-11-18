@@ -9,6 +9,7 @@ import { invariant, getRequiredChunkKey } from './sharedInternals'
 import ChunkExtractorManager from './ChunkExtractorManager'
 import { smartRequire, joinURLPath } from './util'
 import { fail } from 'assert'
+import { Console } from 'console'
 
 const EXTENSION_SCRIPT_TYPES = {
   '.js': 'script',
@@ -490,25 +491,26 @@ class ChunkExtractor {
   getLinkTagsSince(extraProps = {}) {
     const assets = this.getPreAssets()
     const linkTags = assets.map(asset => {
-      if (!this.seenChunks.includes(asset.chunk.id)) {
-        this.seenChunks.push(asset.chunk.id)
+      if (!this.seenChunks.includes(asset.chunk)) {
+        this.seenChunks.push(asset.chunk)
         return assetToLinkTag(asset, extraProps)
       }
       return false
     })
-    return joinTags(linkTags.filter((tag)=>tag))
+    return joinTags(linkTags.filter((tag)=>Boolean(tag)))
   }
 
   getScriptTagsSince(extraProps = {}) {
+    const requiredScriptTag = this.getRequiredChunksScriptTag(extraProps)
     const mainAssets = this.getMainAssets('script')
     const assetsScriptTags = mainAssets.map(asset => {
-      if (!this.seenChunks.includes(asset.chunk.id)) {
-        this.seenChunks.push(asset.chunk.id)
+      if (!this.seenChunks.includes(asset.chunk)) {
+        this.seenChunks.push(asset.chunk)
         return assetToScriptTag(asset, extraProps)
       }
       return false
     })
-    return joinTags(assetsScriptTags.filter((tag)=>tag))
+    return joinTags(assetsScriptTags.filter((tag)=>Boolean(tag)))
   }
 
 }

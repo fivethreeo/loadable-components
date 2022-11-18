@@ -44,6 +44,18 @@ app.get('*', (req, res) => {
   let didError = false;
   let shellReady = false;
 
+  let statsNode = JSON.parse(fs.readFileSync(nodeStats))
+  let statsWeb = JSON.parse(fs.readFileSync(webStats))
+
+
+  const nodeExtractor = new ChunkExtractor({ stats: statsNode })
+  const { default: App } = nodeExtractor.requireEntrypoint()
+
+  const webExtractor = new ChunkExtractor({ stats: statsWeb })
+
+  // Ignore entry 
+  webExtractor.getScriptTagsSince()
+
   class LoadableWritable extends Writable {
     constructor(writable) {
       super();
@@ -56,7 +68,6 @@ app.get('*', (req, res) => {
         const scriptTags = webExtractor.getScriptTagsSince()
         const linkTags = webExtractor.getLinkTagsSince()
         if (scriptTags) {
-          console.log('--' + scriptTags + '--')
           this._writable.write(scriptTags, encoding)
         }
         if (linkTags.length) {
@@ -81,17 +92,6 @@ app.get('*', (req, res) => {
 
   const writeable = new LoadableWritable(res)
 
-  let statsNode = JSON.parse(fs.readFileSync(nodeStats))
-  let statsWeb = JSON.parse(fs.readFileSync(webStats))
-
-
-  const nodeExtractor = new ChunkExtractor({ stats: statsNode })
-  const { default: App } = nodeExtractor.requireEntrypoint()
-
-  const webExtractor = new ChunkExtractor({ stats: statsWeb })
-
-  // Ignore entry 
-  webExtractor.getScriptTagsSince()
 
   const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb}/>),
     {
