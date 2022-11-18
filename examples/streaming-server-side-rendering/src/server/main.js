@@ -71,7 +71,7 @@ app.get('*', (req, res) => {
         if (scriptTags) {
           this._writable.write(scriptTags, encoding)
         }
-        if (linkTags.length) {
+        if (linkTags) {
           this._writable.write(linkTags, encoding)
         }
         // Finally write whatever React tried to write.
@@ -117,6 +117,7 @@ app.get('*', (req, res) => {
         // If you don't want streaming, use this instead of onShellReady.
         // This will fire after the entire page content is ready.
         // You can use this for crawlers or static generation.
+        shellReady = false;
 
         // res.statusCode = didError ? 500 : 200;
         // res.setHeader('Content-type', 'text/html');
