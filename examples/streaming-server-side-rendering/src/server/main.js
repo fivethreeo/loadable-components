@@ -102,6 +102,7 @@ app.get('*', (req, res) => {
         res.statusCode = didError ? 500 : 200;
         res.setHeader('Content-type', 'text/html');
         shellReady = true;
+        stream.pipe(writeable);
 
       },
       onShellError(error) {
@@ -127,7 +128,6 @@ app.get('*', (req, res) => {
     }
   );
 
-  stream.pipe(writeable);
 
 });
 
