@@ -5,8 +5,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import loadable from '@loadable/component'
 import Html from './Html'
 
-const A = loadable(() => import('./letters/A'), { ssrSuspense: true })
-const B = loadable(() => import('./letters/B'), { ssrSuspense: true })
+const A = loadable(() => import('./letters/A' /* webpackPrefetch: true */), { ssrSuspense: true })
+const B = loadable(() => import('./letters/B' /* webpackPrefetch: true */), { ssrSuspense: true })
 
 const App = ({ assets }) => {
   return (
