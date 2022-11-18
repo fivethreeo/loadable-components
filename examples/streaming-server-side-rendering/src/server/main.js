@@ -56,43 +56,36 @@ app.get('*', (req, res) => {
   // Ignore entry 
   webExtractor.getScriptTagsSince()
 
-  class LoadableWritable extends Writable {
-    constructor(writable) {
-      super();
-      this._writable = writable;
-    }
-
-    _write(chunk, encoding, callback) {
+  const writeable = new Writable({
+    write(chunk, encoding, callback) {
       // This should pick up any new link tags that hasn't been previously
       // written to this stream.
       if (shellReady) {
-        const scriptTags = webExtractor.getScriptTagsSince()
-        const linkTags = webExtractor.getLinkTagsSince()
+        const scriptTags = extractor.getScriptTagsSince()
+        const linkTags = extractor.getLinkTagsSince()
         if (scriptTags) {
-          this._writable.write(scriptTags, encoding)
+          res.write(scriptTags, encoding)
         }
         if (linkTags) {
-          this._writable.write(linkTags, encoding)
+          res.write(linkTags, encoding)
         }
         // Finally write whatever React tried to write.
       }
-      this._writable.write(chunk, encoding);
+      res.write(chunk, encoding, callback)
+    },
+    final(callback) {
+      res.end()
       callback()
-    }
-
-    end() {
-      this._writable.end();
-    }
-
+    },
     flush() {
-      if (typeof this._writable.flush === 'function') {
-        this._writable.flush();
+      if (typeof res.flush === 'function') {
+        res.flush();
       }
+    },
+    destroy(err) {
+      res.destroy(err ?? undefined)
     }
-  }
-
-  const writeable = new LoadableWritable(res)
-
+  })
 
   const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb} />),
     {
