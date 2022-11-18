@@ -53,7 +53,6 @@ app.get('*', (req, res) => {
     _write(chunk, encoding, callback) {
       // This should pick up any new link tags that hasn't been previously
       // written to this stream.
-      if (shellReady) {
         const scriptTags = webExtractor.getScriptTagsSince()
         const linkTags = webExtractor.getLinkTagsSince()
         if (scriptTags) {
@@ -63,10 +62,14 @@ app.get('*', (req, res) => {
         if (linkTags.length) {
           this._writable.write(linkTags, encoding) 
         }
-      }
       // Finally write whatever React tried to write.
 
-      this._writable.write(chunk, encoding, callback);
+      this._writable.write(chunk, encoding);
+      callback()
+    }
+
+    end() {
+      this._writable.end();
     }
 
     flush() {
@@ -100,8 +103,6 @@ app.get('*', (req, res) => {
         res.setHeader('Content-type', 'text/html');
         shellReady = true;
 
-        stream.pipe(writeable);
-
       },
       onShellError(error) {
         // Something errored before we could complete the shell so we emit an alternative shell.
@@ -125,6 +126,9 @@ app.get('*', (req, res) => {
       },
     }
   );
+
+  stream.pipe(writeable);
+
 });
 
 // eslint-disable-next-line no-console
