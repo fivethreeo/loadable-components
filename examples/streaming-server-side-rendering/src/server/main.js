@@ -4,7 +4,7 @@ import React from 'react'
 import { renderToPipeableStream } from 'react-dom/server';
 import { ChunkExtractor } from '@loadable/server'
 import { Writable } from 'stream';
-import fs from  'fs';
+import fs from 'fs';
 
 const app = express()
 
@@ -65,16 +65,17 @@ app.get('*', (req, res) => {
     _write(chunk, encoding, callback) {
       // This should pick up any new link tags that hasn't been previously
       // written to this stream.
+      if (shellReady) {
         const scriptTags = webExtractor.getScriptTagsSince()
         const linkTags = webExtractor.getLinkTagsSince()
         if (scriptTags) {
           this._writable.write(scriptTags, encoding)
         }
         if (linkTags.length) {
-          this._writable.write(linkTags, encoding) 
+          this._writable.write(linkTags, encoding)
         }
-      // Finally write whatever React tried to write.
-
+        // Finally write whatever React tried to write.
+      }
       this._writable.write(chunk, encoding);
       callback()
     }
@@ -93,9 +94,9 @@ app.get('*', (req, res) => {
   const writeable = new LoadableWritable(res)
 
 
-  const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb}/>),
+  const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb} />),
     {
-      bootstrapScripts: webExtractor.getMainAssets().map((asset)=>asset.url),
+      bootstrapScripts: webExtractor.getMainAssets().map((asset) => asset.url),
       onShellReady() {
         // The content above all Suspense boundaries is ready.
         // If something errored before we started streaming, we set the error code appropriately.
