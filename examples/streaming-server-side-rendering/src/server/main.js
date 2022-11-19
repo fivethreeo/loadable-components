@@ -1,5 +1,5 @@
 import path from 'path'
-import express from 'express'
+import express, { json } from 'express'
 import React from 'react'
 import { renderToPipeableStream } from 'react-dom/server';
 import { ChunkExtractor } from '@loadable/server'
@@ -43,6 +43,7 @@ const webStats = path.resolve(
 app.get('*', (req, res) => {
   let didError = false;
   let shellReady = false;
+  let firstWrite = true;
 
   let statsNode = JSON.parse(fs.readFileSync(nodeStats))
   let statsWeb = JSON.parse(fs.readFileSync(webStats))
@@ -53,16 +54,13 @@ app.get('*', (req, res) => {
 
   const webExtractor = new ChunkExtractor({ stats: statsWeb })
 
-  // Ignore entry 
-  webExtractor.getScriptTagsSince()
-
   const writeable = new Writable({
     write(chunk, encoding, callback) {
       // This should pick up any new link tags that hasn't been previously
-      // written to this stream.
-      if (shellReady) {
-        const scriptTags = extractor.getScriptTagsSince()
-        const linkTags = extractor.getLinkTagsSince()
+      // written to this stream. Should not write before html if nothing suspended.
+      if (shellReady && !firstWrite) {
+        const scriptTags = webExtractor.getScriptTagsSince()
+        const linkTags = webExtractor.getLinkTagsSince()
         if (scriptTags) {
           res.write(scriptTags, encoding)
         }
@@ -71,6 +69,7 @@ app.get('*', (req, res) => {
         }
         // Finally write whatever React tried to write.
       }
+      firstWrite = false
       res.write(chunk, encoding, callback)
     },
     final(callback) {
@@ -87,16 +86,15 @@ app.get('*', (req, res) => {
     }
   })
 
-  const stream = renderToPipeableStream(webExtractor.collectChunks(<App assets={statsWeb} />),
+  const stream = renderToPipeableStream(webExtractor.collectChunks(<App />),
     {
-      bootstrapScripts: webExtractor.getMainAssets().map((asset) => asset.url),
       onShellReady() {
         // The content above all Suspense boundaries is ready.
         // If something errored before we started streaming, we set the error code appropriately.
         res.statusCode = didError ? 500 : 200;
         res.setHeader('Content-type', 'text/html');
-        shellReady = true;
         stream.pipe(writeable);
+        shellReady = true;
 
       },
       onShellError(error) {
@@ -110,8 +108,8 @@ app.get('*', (req, res) => {
         // If you don't want streaming, use this instead of onShellReady.
         // This will fire after the entire page content is ready.
         // You can use this for crawlers or static generation.
-        shellReady = false;
-
+        // If nothing suspends, make sure scripts are written
+        writeable.write('')
         // res.statusCode = didError ? 500 : 200;
         // res.setHeader('Content-type', 'text/html');
         // stream.pipe(res);

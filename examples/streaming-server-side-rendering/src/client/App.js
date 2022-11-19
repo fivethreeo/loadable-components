@@ -8,9 +8,9 @@ import Html from './Html'
 const A = loadable(() => import('./letters/A' /* webpackPrefetch: true */), { ssrSuspense: true })
 const B = loadable(() => import('./letters/B' /* webpackPrefetch: true */), { ssrSuspense: true })
 
-const App = ({ assets }) => {
+const App = () => {
   return (
-    <Html assets={assets} title="Hello">
+    <Html title="Hello">
       <React.Suspense fallback="Loading">
         <ErrorBoundary FallbackComponent={Error}>  
           <A />

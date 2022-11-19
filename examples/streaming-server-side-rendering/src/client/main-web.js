@@ -4,4 +4,4 @@ import { hydrateRoot } from "react-dom/client";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import App from './App'
 
-hydrateRoot(document, <App assets={window.assetManifest}/>);
+hydrateRoot(document, <App />);
