@@ -2,7 +2,7 @@
 /**
  * @jest-environment jest-environment-selenium-webdriver
  */
-const { By, Builder } = require('selenium-webdriver')
+const { By, Builder, until } = require('selenium-webdriver')
 const { promises: fs } = require('fs')
 const url = 'https://www.selenium.dev/'
 
