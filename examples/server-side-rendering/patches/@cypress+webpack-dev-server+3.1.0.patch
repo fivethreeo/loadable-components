@@ -1,0 +1,24 @@
+diff --git a/node_modules/@cypress/webpack-dev-server/dist/makeWebpackConfig.js b/node_modules/@cypress/webpack-dev-server/dist/makeWebpackConfig.js
+index 8277629..96cc3b5 100644
+--- a/node_modules/@cypress/webpack-dev-server/dist/makeWebpackConfig.js
++++ b/node_modules/@cypress/webpack-dev-server/dist/makeWebpackConfig.js
+@@ -88,9 +88,11 @@ async function makeWebpackConfig(config) {
+             }
+         }
+     }
++    let arrayConfigRest = undefined
+     userWebpackConfig = typeof userWebpackConfig === 'function'
+         ? await userWebpackConfig()
+         : userWebpackConfig;
++    if (Array.isArray(userWebpackConfig)) [userWebpackConfig, ...arrayConfigRest] = userWebpackConfig
+     const userAndFrameworkWebpackConfig = modifyWebpackConfigForCypress((0, webpack_merge_1.merge)(frameworkWebpackConfig !== null && frameworkWebpackConfig !== void 0 ? frameworkWebpackConfig : {}, userWebpackConfig !== null && userWebpackConfig !== void 0 ? userWebpackConfig : {}));
+     debug(`User passed in user and framework webpack config with values %o`, userAndFrameworkWebpackConfig);
+     debug(`New webpack entries %o`, files);
+@@ -109,6 +111,7 @@ async function makeWebpackConfig(config) {
+         mergedConfig.entry = exports.CYPRESS_WEBPACK_ENTRYPOINT;
+     }
+     debug('Merged webpack config %o', mergedConfig);
++    if (arrayConfigRest) return [mergedConfig, ...arrayConfigRest]
+     return mergedConfig;
+ }
+ exports.makeWebpackConfig = makeWebpackConfig;
