@@ -3,7 +3,7 @@
  * @jest-environment jest-environment-selenium-webdriver
  */
 const { By, Builder } = require('selenium-webdriver')
-const { promises: fs } = require("fs");
+const { promises: fs } = require('fs')
 const url = 'https://www.selenium.dev/'
 
 const getElementXpath = async (driver, xpath, timeout = 3000) => {
@@ -42,7 +42,7 @@ describe('executing test scenario on the website www.selenium.dev', () => {
       `"Selenium automates browsers. That's it!"`,
     )
   })
-/* 
+  /* 
   test('it performs a validation of the search box on the page', async () => {
     const foundAndLoadedCheck = async () => {
       await until.elementLocated(By.id('search'))
@@ -61,8 +61,12 @@ describe('executing test scenario on the website www.selenium.dev', () => {
     test('snap a picture by taking the screenshot', async () => {
       // files saved in ./reports/screenshots by default
       await driver.get(url)
-      const encodedString = await driver.takeScreenshot();
-      await fs.writeFile('./image.png', encodedString, 'base64');
+      const encodedString = await driver.takeScreenshot()
+      expect(
+        await driver.executeScript('return window.location.href'),
+      ).toMatchInlineSnapshot(`"https://www.selenium.dev/"`)
+
+      await fs.writeFile('./image.png', encodedString, 'base64')
     })
   })
 })
