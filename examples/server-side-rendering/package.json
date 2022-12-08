@@ -18,10 +18,15 @@
     "@loadable/component": "file:./../../packages/component",
     "@loadable/server": "file:./../../packages/server",
     "@loadable/webpack-plugin": "file:./../../packages/webpack-plugin",
+    "babel-jest": "^29.3.1",
     "babel-loader": "^8.0.6",
+    "chromedriver": "^108.0.0",
     "css-loader": "^2.1.1",
+    "jest": "^29.3.1",
+    "jest-environment-selenium-webdriver": "^6.1.1",
     "mini-css-extract-plugin": "^0.6.0",
     "nodemon": "^1.19.0",
+    "selenium-webdriver": "^4.7.0",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
     "webpack-dev-middleware": "^3.6.2",
@@ -33,5 +38,8 @@
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
+  },
+  "resolutions": {
+    "chromedriver": "^108.0.0"
   }
 }

@@ -12,7 +12,6 @@ module.exports = api => {
 
   return {
     presets: [
-      '@babel/preset-react',
       [
         '@babel/preset-env',
         {
@@ -22,6 +21,8 @@ module.exports = api => {
           modules: webpack ? false : 'commonjs',
         },
       ],
+      '@babel/preset-react',
+
     ],
     plugins: ['@babel/plugin-syntax-dynamic-import', '@loadable/babel-plugin'],
   }
