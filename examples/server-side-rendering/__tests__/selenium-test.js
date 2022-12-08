@@ -3,7 +3,7 @@
  * @jest-environment jest-environment-selenium-webdriver
  */
 const { By, Builder } = require('selenium-webdriver')
-const fs = require('fs');
+const { promises: fs } = require("fs");
 const url = 'https://www.selenium.dev/'
 
 const getElementXpath = async (driver, xpath, timeout = 3000) => {
@@ -62,7 +62,7 @@ describe('executing test scenario on the website www.selenium.dev', () => {
       // files saved in ./reports/screenshots by default
       await driver.get(url)
       const encodedString = await driver.takeScreenshot();
-      await fs.writeFileSync('./image.png', encodedString, 'base64');
+      await fs.writeFile('./image.png', encodedString, 'base64');
     })
   })
 })
