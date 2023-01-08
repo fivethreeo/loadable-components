@@ -29,5 +29,11 @@
   },
   "dependencies": {
     "make-dir": "^3.0.2"
+  },
+  "devDependencies": {
+    "memfs": "^3.4.13",
+    "memory-fs": "^0.5.0",
+    "unionfs": "^4.4.0",
+    "webpack": "4"
   }
 }
