@@ -69,6 +69,7 @@ describe('LoadablePlugin', () => {
         output: {
           path: outputDir,
           filename: '[name].js',
+          chunkFilename: '[name].js',
         },
         module: {
           rules: [
